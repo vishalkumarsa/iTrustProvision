@@ -1,0 +1,83 @@
+---
+ - hosts: localhost
+   tasks:
+    - name: Install pip
+      become: yes
+      apt: 
+        name: python-pip
+        state: present
+    
+    - name: create vm directory
+      file: path="/home/kichoo/devops_m1/checkbox_vm" state=directory
+      become: yes
+    
+    - name: Check if vagrant box is already present
+      shell: '[ -f /home/kichoo/devops_m1/checkbox_vm/Vagrantfile ] && echo "File exist" || echo "File does not exist"'
+      register: file_exist
+    
+    - name: creating new vagrant image
+      shell: chdir=/home/kichoo/devops_m1/checkbox_vm vagrant init ubuntu/trusty64
+      when: file_exist.stdout == "File does not exist"
+      become: yes
+    
+    #- name: editing Vagrantfile
+    #  lineinfile:
+    #    path: Vagrantfile
+    #    regexp: '^end$'
+    #    state: absent
+    #  become: true
+    #  when: file_exist.stdout == "File does not exist"
+    
+    #- name: adding the configuration changes  
+    #  blockinfile:
+    #    path: Vagrantfile
+    #    block: |
+    #      config.vm.network "private_network", ip: "192.168.33.10"
+    #      end
+    #  when: file_exist.stdout == "File does not exist"
+    #  become: yes
+    
+    - name: adding the configuration changes  
+      replace:
+        path: /home/kichoo/devops_m1/checkbox_vm/Vagrantfile
+        regexp: '# config.vm.network \"private_network\", ip: \"192.168.33.10\"'
+        replace: 'config.vm.network "private_network", ip: "192.168.33.10"'
+      when: file_exist.stdout == "File does not exist"
+      become: yes
+    
+    - name: bringing up the vm
+      shell: chdir=/home/kichoo/devops_m1/checkbox_vm vagrant up
+      become: yes
+    
+    - name: create directory for key
+      file: path="/home/kichoo/devops_m1/CreateVMCheckbox.io/keys" state=directory
+      become: yes
+    
+    #- name: set ssh key for checkbox vm
+    #  command: sudo cat /home/kichoo/checkbox_vm/.vagrant/machines/default/virtualbox/private_key -vvvv
+    #  register: pub_file 
+        #dest: /home/kichoo/devops_m1/checkbox_vm/keys/checkbox_vm.key
+        #mode: 0600
+    #  become: yes
+    #  become_user: root
+    - name: permissios on pvt key
+      file:
+        path: /home/kichoo/devops_m1/checkbox_vm/.vagrant/machines/default/virtualbox/private_key
+        mode: 0777
+      become: yes
+      
+    - name: set ssh key for checkbox vm
+      become: true
+      command: "cat /home/kichoo/devops_m1/checkbox_vm/.vagrant/machines/default/virtualbox/private_key"
+      register: pub_file  
+      
+    - name: creating key
+      file: path=/home/kichoo/devops_m1/CreateVMCheckbox.io/keys/checkbox.key mode=0777 state=touch
+      become: yes
+   
+    #- name: Debug
+    #  debug: msg="{{ pub_file.stdout }}"
+      
+    - name: creating key
+      local_action: copy content={{ pub_file.stdout }} dest=/home/kichoo/devops_m1/CreateVMCheckbox.io/keys/checkbox.key
+      become: yes
