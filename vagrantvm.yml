@@ -60,7 +60,7 @@
         #mode: 0600
     #  become: yes
     #  become_user: root
-    - name: permissios on pvt key
+    - name: permissions on pvt key
       file:
         path: /home/kichoo/devops_m1/itrust_vm/.vagrant/machines/default/virtualbox/private_key
         mode: 0777
