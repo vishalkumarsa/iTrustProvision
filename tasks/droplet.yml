@@ -4,7 +4,6 @@
     command=ssh
     name=my_ssh_key
     api_token="{{ api_key }}"
-    ssh_pub_key="{{ my_pub_key }}"
   register: do_droplet
      
 - name: Create Digital Ocean droplet 512Mb/Ubuntu12.04 LTS/Amsterdam
