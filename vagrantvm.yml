@@ -34,7 +34,7 @@
       become: yes
     
     - name: create directory for key
-      file: path="/home/kichoo/devops_m1/iTrustProvision/keys" state=directory
+      file: path="/home/kichoo/devops_m1/itrust_vm/keys" state=directory
       become: yes
     
     - name: permissions on pvt key
@@ -49,9 +49,9 @@
       register: pub_file  
       
     - name: creating key
-      file: path=/home/kichoo/devops_m1/iTrustProvision/keys/itrust.key mode=0777 state=touch
+      file: path=/home/kichoo/devops_m1/itrust_vm/keys/itrust.key mode=0777 state=touch
       become: yes
    
     - name: creating key
-      local_action: copy content={{ pub_file.stdout }} dest=/home/kichoo/devops_m1/iTrustProvision/keys/itrust.key
+      local_action: copy content={{ pub_file.stdout }} dest=/home/kichoo/devops_m1/itrust_vm/keys/itrust.key
       become: yes
