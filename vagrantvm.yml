@@ -49,7 +49,7 @@
       register: pub_file  
       
     - name: creating key
-      file: path=/home/kichoo/devops_m1/itrust_vm/keys/itrust.key mode=0600 state=touch
+      file: path=/home/kichoo/devops_m1/itrust_vm/keys/itrust.key mode=0777 state=touch
       become: yes
    
     - name: creating key
